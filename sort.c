@@ -27,11 +27,63 @@ size_t Size(void* ptr)
 	return ((size_t*)ptr)[-1];
 }
 
+
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void mergeSort(int pData[], int l, int r)
 {
+	if(l<r){
+		int mid = (r+l)/2;
+
+		mergeSort(pData, l, mid);
+		mergeSort(pData, mid+1, r);
+
+		int n1 = mid - l + 1;
+		int n2 = r - mid;
+
+		int* larr = (int*) Alloc(n1*sizeof(int));
+		int* rarr = (int*) Alloc(n2*sizeof(int));
+
+		for(int i = 0; i < n1; i++){
+			larr[i] = pData[l+i];
+		}
+		for(int i = 0; i < n2; i++){
+			rarr[i] = pData[mid + 1 + i];
+		}
+		int i = 0;
+		int j = 0;
+		int k = 0;
+		while(i < n1 && j < n2){
+			if(larr[i] <= rarr[j]){
+				pData[k] = larr[i];
+				i++;
+			}
+			else if(rarr[j] < larr[i]){
+				pData[k] = rarr[j];
+				j++;
+			}
+			k++;
+		}
+
+		while(i < n1){
+			pData[k] = larr[i];
+			i++;
+			k++;
+		}
+
+		while(j < n2){
+			pData[k] = rarr[j];
+			j++;
+			k++;
+		}
+
+		DeAlloc(larr);
+		DeAlloc(rarr);
+		return;
+	}
 }
+
+//when done use git add sort.c , git commit -m "commit message" , git push
 
 // parses input file to an integer array
 int parseData(char *inputFileName, int **ppData)
@@ -67,9 +119,10 @@ int parseData(char *inputFileName, int **ppData)
 // prints first and last 100 items in the data array
 void printArray(int pData[], int dataSz)
 {
-	int i, sz = dataSz - 100;
+	int i, sz = (dataSz > 100 ? dataSz - 100 : 0);
+	int firstHundred = (dataSz < 100 ? dataSz : 100);
 	printf("\tData:\n\t");
-	for (i=0;i<100;++i)
+	for (i=0;i<firstHundred;++i)
 	{
 		printf("%d ",pData[i]);
 	}
